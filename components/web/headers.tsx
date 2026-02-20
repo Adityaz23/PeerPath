@@ -76,7 +76,7 @@ export default function Header({ isPro }: { isPro: boolean }) {
               )}
 
               <UserButton appearance={{ elements: { avatarBox: "size-9" } }} />
-              <ThemeToggle />
+              
             </>
           ) : (
             <div className="flex items-center gap-2">
@@ -90,8 +90,8 @@ export default function Header({ isPro }: { isPro: boolean }) {
               </Link>
             </div>
           )}
+          <ThemeToggle />
         </div>
-
       </div>
     </header>
   );

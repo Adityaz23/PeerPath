@@ -441,7 +441,7 @@
   }
 
   .section-description {
-    @apply text-lg text-muted-foreground max-w-2xl mx-auto;
+    @apply text-lg text-muted-foreground max-w-2xl mx-auto sm:text-xl;
   }
 
   .gradient-text {
