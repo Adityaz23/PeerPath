@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import Footer from "@/components/web/footer";
 
 const jetbrainsmono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -34,6 +35,7 @@ export default function RootLayout({
 
             <main className="mx-auto w-full max-w-7xl px-6 py-6">
               {children}
+              <Footer />
             </main>
           </ThemeProvider>
         </body>
