@@ -1,10 +1,11 @@
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import Footer from "@/components/web/footer";
 import HeaderWrapper from "@/components/web/header-wrapper";
 import { ClerkProvider } from "@clerk/nextjs";
 import { type Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ui/theme-provider";
-import Footer from "@/components/web/footer";
+import { QueryProvider } from "@/components/providers/queryProvider";
 
 const jetbrainsmono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -31,12 +32,14 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <HeaderWrapper />
+            <QueryProvider>
+              <HeaderWrapper />
 
-            <main className="mx-auto w-full max-w-7xl px-6 py-6">
-              {children}
-              <Footer />
-            </main>
+              <main className="mx-auto w-full max-w-7xl px-6 py-6">
+                {children}
+                <Footer />
+              </main>
+            </QueryProvider>
           </ThemeProvider>
         </body>
       </html>
