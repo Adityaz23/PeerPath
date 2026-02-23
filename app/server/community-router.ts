@@ -1,7 +1,7 @@
 import { db } from "@/db";
-import { communities, communityMembers } from "@/db/schema";
+import { communities, communityMembers, learningGoals } from "@/db/schema";
 import { clerkOrCreateUserByClerk } from "@/lib/user-utils";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 
@@ -34,11 +34,53 @@ const communitiesApp = new Hono<{ Variables: Variables }>()
     return c.json(userCommunities);
   })
   .post("/:communityId/join", async (c) => {
+    //  Right here getting the user from the database and getting the join functionality.
+    const clerkId = c.get("userId");
     const communityId = c.req.param("communityId");
-    return c.json({
-      message: `Joined ${communityId} community 
-    successfully`,
+    const user = await clerkOrCreateUserByClerk(clerkId);
+    if (!user) {
+      throw new HTTPException(404, { message: "User not found!" });
+    }
+    const [existing] = await db
+      .select()
+      .from(communityMembers)
+      .where(
+        and(
+          eq(communityMembers.userId, user.id),
+          eq(communityMembers.communityId, communityId),
+        ),
+      );
+    if (existing) {
+      throw new HTTPException(400, {
+        message: "User already joined community",
+      });
+    }
+    await db.insert(communityMembers).values({
+      userId: user.id,
+      communityId: communityId,
     });
+    return c.json({
+      message: "Joined community successfully",
+      communityId: communityId,
+    });
+  })
+  .get("/:communityId/goals", async (c) => {
+    const clerkId = c.get("userId");
+    const communityId = c.req.param("communityId");
+    const user = await clerkOrCreateUserByClerk(clerkId);
+    if (!user) {
+      throw new HTTPException(404, { message: "User not found" });
+    }
+    const goals = await db
+      .select()
+      .from(learningGoals)
+      .where(
+        and(
+          eq(learningGoals.userId, user.id),
+          eq(learningGoals.communityId, communityId),
+        ),
+      );
+    return c.json(goals);
   });
 
 export { communitiesApp };
