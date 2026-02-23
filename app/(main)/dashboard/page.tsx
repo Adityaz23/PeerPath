@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useCommunities } from "@/hooks/use-community";
 import { client } from "@/lib/api-client";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
@@ -22,16 +23,7 @@ export default function DashboardPage() {
     data: userCommunities,
     isLoading: isLoadingCommunities,
     error: errorUserCommunities,
-  } = useQuery({
-    queryKey: ["communities"],
-    queryFn: async () => {
-      const res = await client.api.communities.$get();
-      if (!res.ok) {
-        throw new Error("Failed to fetch the communities.");
-      }
-      return res.json();
-    },
-  });
+  } = useCommunities();
 
   const pendingMatches = 6;
 
