@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { communities, communityMembers, learningGoals } from "@/db/schema";
+import { communities, communityMembers } from "@/db/schema";
 import { clerkOrCreateUserByClerk } from "@/lib/user-utils";
 import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
@@ -64,23 +64,5 @@ const communitiesApp = new Hono<{ Variables: Variables }>()
       communityId: communityId,
     });
   })
-  .get("/:communityId/goals", async (c) => {
-    const clerkId = c.get("userId");
-    const communityId = c.req.param("communityId");
-    const user = await clerkOrCreateUserByClerk(clerkId);
-    if (!user) {
-      throw new HTTPException(404, { message: "User not found" });
-    }
-    const goals = await db
-      .select()
-      .from(learningGoals)
-      .where(
-        and(
-          eq(learningGoals.userId, user.id),
-          eq(learningGoals.communityId, communityId),
-        ),
-      );
-    return c.json(goals);
-  });
-
+  
 export { communitiesApp };

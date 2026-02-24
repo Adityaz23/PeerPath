@@ -1,12 +1,12 @@
 // Creating a new hono instance :-
+import { communitiesApp } from "@/app/server/community-router";
+import learningGoalsApp from "@/app/server/learning-goal-route";
 import { db } from "@/db";
-import { communities, communityMembers } from "@/db/schema";
+import { communities } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { Hono } from "hono";
-import { handle } from "hono/vercel";
 import { HTTPException } from "hono/http-exception";
-import { eq } from "drizzle-orm";
-import { communitiesApp } from "@/app/server/community-router";
+import { handle } from "hono/vercel";
 type Variables = {
   userId: string;
 };
@@ -76,14 +76,18 @@ app.get("/communities/all", async (c) => {
 //   return c.json({ message: `Joined ${communityId} community successfully` });
 // });
 
-const routes = app.route("/communities",communitiesApp)
+// Adding the new route for the learningGoalsApp :-
+const routes = app
+  .route("/communities", communitiesApp)
+  .route("/communities", learningGoalsApp);
 
 // .post("/communities/:communityId/join", async (c) => {
-  // const communityId = c.req.param("communityId")
-  // return c.json({ message: `Joined ${communityId} community successfully` });
+// const communityId = c.req.param("communityId")
+// return c.json({ message: `Joined ${communityId} community successfully` });
 // });
 
 // This is the RPC feature :- Remote Procedure Call. (Calling a function on a server as it it were normal function in our frontend code.)
+
 export type Apptype = typeof routes;
 
 export const GET = handle(app);
