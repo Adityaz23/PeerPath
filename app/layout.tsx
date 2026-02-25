@@ -6,6 +6,7 @@ import { type Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/queryProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const jetbrainsmono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -41,6 +42,7 @@ export default function RootLayout({
               </main>
             </QueryProvider>
           </ThemeProvider>
+          <Toaster position="top-right"/>
         </body>
       </html>
     </ClerkProvider>
