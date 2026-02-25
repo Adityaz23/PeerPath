@@ -5,6 +5,7 @@ import { and, eq } from "drizzle-orm";
 import { Context, Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import z, { ZodType } from "zod";
+import { authMiddleware } from "./middlewares/auth-middleware";
 type Variables = {
   userId: string;
 };
@@ -40,13 +41,11 @@ const createGoalSchema = z.object({
 });
 
 const learningGoalsApp = new Hono<{ Variables: Variables }>()
+  .use("/*", authMiddleware)
   .get("/:communityId/goals", async (c) => {
-    const clerkId = c.get("userId");
+    const user = c.get("user");
     const communityId = c.req.param("communityId");
-    const user = await clerkOrCreateUserByClerk(clerkId);
-    if (!user) {
-      throw new HTTPException(404, { message: "User not found" });
-    }
+
     const goals = await db
       .select()
       .from(learningGoals)
@@ -59,15 +58,8 @@ const learningGoalsApp = new Hono<{ Variables: Variables }>()
     return c.json(goals);
   })
   .post("/goals", async (c) => {
-    const clerkId = c.get("userId");
-    console.log("clerkId", clerkId);
-
     const body = await validateBody(c, createGoalSchema);
-    const user = await clerkOrCreateUserByClerk(clerkId);
-    console.log("user", user);
-    if (!user) {
-      throw new HTTPException(404, { message: "User not found" });
-    }
+    const user = c.get("user");
     const [goal] = await db
       .insert(learningGoals)
       .values({
@@ -81,32 +73,30 @@ const learningGoalsApp = new Hono<{ Variables: Variables }>()
     return c.json(goal);
   })
 
+  // TODO Need to work on the delete route for the specific added goal.
+
   .delete("/:communityId/goals/:goalId", async (c) => {
-  const clerkId = c.get("userId");
-  const goalId = c.req.param("goalId");
-  const communityId = c.req.param("communityId");
+    const goalId = c.req.param("goalId");
+    const communityId = c.req.param("communityId");
 
-  const user = await clerkOrCreateUserByClerk(clerkId);
-  if (!user) {
-    throw new HTTPException(404, { message: "User not found" });
-  }
+    const user = c.get("user");
 
-  const [goal] = await db
-    .delete(learningGoals)
-    .where(
-      and(
-        eq(learningGoals.id, goalId),
-        eq(learningGoals.userId, user.id),
-        eq(learningGoals.communityId, communityId),
-      ),
-    )
-    .returning();
+    const [goal] = await db
+      .delete(learningGoals)
+      .where(
+        and(
+          eq(learningGoals.id, goalId),
+          eq(learningGoals.userId, user.id),
+          eq(learningGoals.communityId, communityId),
+        ),
+      )
+      .returning();
 
-  if (!goal) {
-    throw new HTTPException(404, { message: "Goal not found" });
-  }
+    if (!goal) {
+      throw new HTTPException(404, { message: "Goal not found" });
+    }
 
-  return c.json({ message: "Goal deleted" });
-});
+    return c.json({ message: "Goal deleted" });
+  });
 
 export default learningGoalsApp;

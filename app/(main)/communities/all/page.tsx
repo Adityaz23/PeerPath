@@ -14,6 +14,7 @@ import {
 } from "@/hooks/use-community";
 import { ArrowLeftIcon, CheckIcon } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function MoreCommunity() {
   const {
@@ -33,8 +34,8 @@ export default function MoreCommunity() {
   };
   const joinedCommunityMutation = useJoinCommunity();
   const handleJoinCommunity = async (communityId: string) => {
-    console.log("Joining Community", communityId);
     await joinedCommunityMutation.mutateAsync(communityId);
+    toast.success("Joined community successfully!");
   };
 
   if (isLoadingAllCommunities) return <div>Loading....</div>;
@@ -57,15 +58,13 @@ export default function MoreCommunity() {
               <CardHeader>
                 <CardTitle>
                   {community.name}
-                  <CardDescription>
-                  {community.description}
-                  </CardDescription>
+                  <CardDescription>{community.description}</CardDescription>
                 </CardTitle>
                 <CardFooter className="px-0 mt-2">
                   <Button
                     className="w-full"
                     disabled={isJoined(community.id)}
-                   onClick={() => handleJoinCommunity(community.id)}
+                    onClick={() => handleJoinCommunity(community.id)}
                   >
                     {isJoined(community.id) ? (
                       <>

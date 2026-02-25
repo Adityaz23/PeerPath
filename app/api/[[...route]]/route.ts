@@ -1,6 +1,7 @@
 // Creating a new hono instance :-
 import { communitiesApp } from "@/app/server/community-router";
 import learningGoalsApp from "@/app/server/learning-goal-route";
+import { matchesApp } from "@/app/server/matches-route";
 import { db } from "@/db";
 import { communities } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
@@ -79,7 +80,8 @@ app.get("/communities/all", async (c) => {
 // Adding the new route for the learningGoalsApp :-
 const routes = app
   .route("/communities", communitiesApp)
-  .route("/communities", learningGoalsApp);
+  .route("/communities", learningGoalsApp)
+  .route("/matches",matchesApp)
 
 // .post("/communities/:communityId/join", async (c) => {
 // const communityId = c.req.param("communityId")

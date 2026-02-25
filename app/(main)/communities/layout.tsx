@@ -25,6 +25,7 @@ export default function CommunitiesLayout({
         </div>
       </div>
       {children}
+      
     </div>
   );
 }
