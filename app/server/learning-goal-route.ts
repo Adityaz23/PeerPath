@@ -33,10 +33,10 @@ const validateBody = async <T>(c: Context, schema: ZodType<T>): Promise<T> => {
 // Now creating the schema which will have all the required schema for the add goal.
 
 const createGoalSchema = z.object({
-  title: z.string().min(4, "Title is required!"),
-  description: z.string().min(20, "Description is required!").max(2000),
+  title: z.string().min(1).max(100),
+  description: z.string().min(1).max(2000),
   tags: z.array(z.string()).optional().default([]),
-  communityId: z.string().min(1, "Community ID is required!"),
+  communityId: z.string().min(1),
 });
 
 const learningGoalsApp = new Hono<{ Variables: Variables }>()
